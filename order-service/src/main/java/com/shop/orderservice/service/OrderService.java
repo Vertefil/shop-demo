@@ -1,9 +1,9 @@
 package com.shop.orderservice.service;
 
+import com.shop.events.OrderCreatedEvent;
 import com.shop.orderservice.dto.CreateOrderRequest;
 import com.shop.orderservice.dto.OrderResponse;
 import com.shop.orderservice.entity.Order;
-import com.shop.orderservice.event.OrderCreatedEvent;
 import com.shop.orderservice.kafka.OrderKafkaProducer;
 import com.shop.orderservice.repository.OrderRepository;
 import jakarta.transaction.Transactional;

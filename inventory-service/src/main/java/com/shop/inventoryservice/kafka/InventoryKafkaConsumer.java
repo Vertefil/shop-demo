@@ -1,6 +1,6 @@
 package com.shop.inventoryservice.kafka;
 
-import com.shop.inventoryservice.event.OrderCreatedEvent;
+import com.shop.events.OrderCreatedEvent;
 import com.shop.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
