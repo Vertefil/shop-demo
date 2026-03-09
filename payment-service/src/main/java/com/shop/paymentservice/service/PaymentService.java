@@ -1,6 +1,6 @@
 package com.shop.paymentservice.service;
 
-import com.shop.events.OrderCreatedEvent;
+import com.shop.events.InventoryReservedEvent;
 import com.shop.events.PaymentProcessedEvent;
 import com.shop.paymentservice.dto.PaymentResponse;
 import com.shop.paymentservice.entity.Payment;
@@ -24,7 +24,7 @@ public class PaymentService {
     private final Random random = new Random();
 
     @Transactional
-    public void processPayment(OrderCreatedEvent event) {
+    public void processPayment(InventoryReservedEvent event) {
         // симуляция оплаты 80% успеха
         boolean success = random.nextInt(10) < 8;
 

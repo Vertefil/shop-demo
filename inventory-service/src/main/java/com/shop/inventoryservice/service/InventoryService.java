@@ -1,9 +1,12 @@
 package com.shop.inventoryservice.service;
 
+import com.shop.events.InventoryReservedEvent;
+import com.shop.events.OrderCancelledEvent;
 import com.shop.events.OrderCreatedEvent;
 import com.shop.inventoryservice.dto.CreateProductRequest;
 import com.shop.inventoryservice.dto.ProductResponse;
 import com.shop.inventoryservice.entity.Product;
+import com.shop.inventoryservice.kafka.InventoryKafkaProducer;
 import com.shop.inventoryservice.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.List;
 public class InventoryService {
 
     private final ProductRepository productRepository;
+    private final InventoryKafkaProducer kafkaProducer;
 
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = Product.builder()
@@ -48,6 +52,7 @@ public class InventoryService {
     public boolean reserveProduct(OrderCreatedEvent event) {
         Product product = productRepository.findById(event.getProductId())
                 .orElseThrow(() -> new RuntimeException("Товар не найден: " + event.getProductId()));
+
         if (product.getQuantity() < event.getQuantity()) {
             log.warn(
                     "Недостаточно товара. Заказ {}, нужно: {}, есть {}",
@@ -55,17 +60,35 @@ public class InventoryService {
                     event.getQuantity(),
                     product.getQuantity()
             );
+
+            kafkaProducer.sendOrderCancelledEvent(OrderCancelledEvent.builder()
+                    .orderId(event.getOrderId())
+                    .userId(event.getUserId())
+                    .reason("Недостаточно товара на складе. Запрошено: " +
+                            event.getQuantity() +
+                            ", доступно: " +
+                            product.getQuantity()
+                    )
+                    .build()
+            );
+
             return false;
         }
 
         product.setQuantity(product.getQuantity() - event.getQuantity());
         productRepository.save(product);
+
         log.info("Товар зарезервирован. Заказ {}, товар {}, остаток {}",
                 event.getOrderId(),
                 product.getName(),
                 product.getQuantity()
         );
 
+        kafkaProducer.sendInventoryReservedEvent(InventoryReservedEvent.builder()
+                .orderId(event.getOrderId())
+                .userId(event.getUserId())
+                .totalPrice(event.getTotalPrice())
+                .build());
         return true;
     }
 

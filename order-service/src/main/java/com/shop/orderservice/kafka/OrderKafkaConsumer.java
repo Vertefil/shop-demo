@@ -1,5 +1,6 @@
 package com.shop.orderservice.kafka;
 
+import com.shop.events.OrderCancelledEvent;
 import com.shop.events.PaymentProcessedEvent;
 import com.shop.orderservice.entity.Order;
 import com.shop.orderservice.service.OrderService;
@@ -27,5 +28,11 @@ public class OrderKafkaConsumer {
                 Order.OrderStatus.CANCELED;
 
         orderService.updateOrderStatus(event.getOrderId(), newStatus);
+    }
+
+    @KafkaListener(topics = "order.cancelled", groupId = "order-group")
+    public void handeOrderCancelled(OrderCancelledEvent event) {
+        log.info("Заказ {} отменён. Причина: {}", event.getOrderId(), event.getReason());
+        orderService.updateOrderStatus(event.getOrderId(), Order.OrderStatus.CANCELED);
     }
 }
