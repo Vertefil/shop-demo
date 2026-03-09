@@ -1,5 +1,6 @@
 package com.shop.notificationservice.kafka;
 
+import com.shop.events.OrderCancelledEvent;
 import com.shop.events.OrderCreatedEvent;
 import com.shop.events.PaymentProcessedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,15 @@ public class NotificationKafkaConsumer {
                 event.getUserId(),
                 event.getProductId(),
                 event.getQuantity()
+        );
+    }
+
+    @KafkaListener(topics = "order.cancelled", groupId = "notification-group")
+    public void handeOrderCancelled(OrderCancelledEvent event) {
+        log.info("[УВЕДОМЛЕНИЕ] Заказ #{} ОТМЕНЁН! Причина: {}. Пользователь: {}",
+                event.getOrderId(),
+                event.getReason(),
+                event.getUserId()
         );
     }
 

@@ -1,6 +1,6 @@
 package com.shop.paymentservice.kafka;
 
-import com.shop.events.OrderCreatedEvent;
+import com.shop.events.InventoryReservedEvent;
 import com.shop.paymentservice.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class PaymentKafkaConsumer {
+
     private final PaymentService paymentService;
 
-    @KafkaListener(topics = "order.created", groupId = "payment-group")
-    public void handleOrderCreated(OrderCreatedEvent event) {
-        log.info("Получено событие order.created для оплаты: orderId{}, amount={}",
-                event.getOrderId(),
-                event.getTotalPrice()
-        );
+    @KafkaListener(topics = "inventory.reserved", groupId = "payment-group")
+    public void handleInventoryReserved(InventoryReservedEvent event) {
+        log.info("Получено inventory.reserved для оплаты: orderId={}, amount={}",
+                event.getOrderId(), event.getTotalPrice());
         paymentService.processPayment(event);
     }
 }
