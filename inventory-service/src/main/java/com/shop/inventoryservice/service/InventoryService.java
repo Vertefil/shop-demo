@@ -1,9 +1,9 @@
 package com.shop.inventoryservice.service;
 
+import com.shop.events.OrderCreatedEvent;
 import com.shop.inventoryservice.dto.CreateProductRequest;
 import com.shop.inventoryservice.dto.ProductResponse;
 import com.shop.inventoryservice.entity.Product;
-import com.shop.inventoryservice.event.OrderCreatedEvent;
 import com.shop.inventoryservice.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
