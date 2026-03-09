@@ -28,9 +28,9 @@ public class PaymentService {
         // симуляция оплаты 80% успеха
         boolean success = random.nextInt(10) < 8;
 
-        Payment.PaymentStatus status = success
-                ? Payment.PaymentStatus.SUCCESS
-                : Payment.PaymentStatus.FAILED;
+        Payment.PaymentStatus status = success ?
+                Payment.PaymentStatus.SUCCESS :
+                Payment.PaymentStatus.FAILED;
 
         Payment payment = Payment.builder()
                 .orderId(event.getOrderId())
